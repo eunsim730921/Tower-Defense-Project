@@ -152,6 +152,24 @@ function draw() {
             ctx.stroke();
         }
     }
+    
+    for (const tower of towers) {
+        if (tower === hoverTower || tower === selectedTower) {
+            ctx.beginPath();
+            ctx.arc(
+                tower.x + TILE_SIZE / 2,
+                tower.y + TILE_SIZE / 2,
+                tower.range,
+                0,
+                Math.PI * 2
+            );
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+            ctx.strokeStyle = 'rgba(0, 255, 0, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+        }
+    }
 }
 
 function update() {
