@@ -152,7 +152,7 @@ function draw() {
             ctx.stroke();
         }
     }
-    
+
     for (const tower of towers) {
         if (tower === hoverTower || tower === selectedTower) {
             ctx.beginPath();
