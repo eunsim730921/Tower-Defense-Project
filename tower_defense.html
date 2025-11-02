@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>정말 기초적인 타워디펜스</title>
-    <link rel="stylesheet" href="Tower_defense.css">
-    <script src="Tower_defense.js" defer></script>
+    <link rel="stylesheet" href="tower_defense.css">
+    <script src="tower_defense.js" defer></script>
+    <script src="tower.js" defer></script>
+
 </head>
 
 <body>
@@ -19,8 +21,16 @@
         <div>웨이브: <span id="wave">0</span></div>
     </div>
 
-    <div style="position: relative;">
+    <!-- <div style="position: relative;"> -->
+    <div class="game-container">
         <canvas id="gameCanvas" width="600" height="450"></canvas>
+
+        <div id="towerInfoPanel">
+            <h3>타워 정보</h3>
+            <p id="towerRange">사거리: -</p>
+            <p id="towerDamage">공격력: -</p>
+            <p id="towerFireRate">공격속도: -</p>
+        </div>
 
         <div id="gameOver">
             <h2>게임 오버</h2>

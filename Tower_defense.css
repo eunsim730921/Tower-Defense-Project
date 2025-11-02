@@ -50,3 +50,41 @@ h2 {
     font-size: 2rem;
     color: red;
 }
+
+.game-container {
+    position: relative;
+    display: inline-block;
+}
+
+#gameCanvas {
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+#towerInfoPanel {
+    position: absolute;
+    top: 0;
+    left: 620px;
+    width: 250px;
+    height: 450px;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-sizing: border-box;
+    display: none;
+    transition: opacity 0.2s ease;
+}
+
+#towerInfoPanel h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+#towerInfoPanel p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+}
