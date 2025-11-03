@@ -88,3 +88,12 @@ h2 {
     margin: 0.5rem 0;
     font-size: 1.1rem;
 }
+
+canvas:hover {
+    cursor: crosshair;
+}
+
+.grid-hover {
+    fill: rgba(0, 255, 0, 0.3);
+    transition: fill 0.15s ease;
+}
