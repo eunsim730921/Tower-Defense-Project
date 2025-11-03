@@ -97,3 +97,5 @@ canvas:hover {
     fill: rgba(0, 255, 0, 0.3);
     transition: fill 0.15s ease;
 }
+
+#panelTitle { margin: 0 0 0.75rem 0; }
