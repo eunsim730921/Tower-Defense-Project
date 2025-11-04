@@ -29,4 +29,11 @@ tower_defense.js와 tower.js를 기능별로 별도의 js 파일로 분리해줘
 각 파일은 한 기능에만 집중하도록 만들고, import/export 없이 전역 변수로 상호작용하는 구조로 만들어줘. 
 대신 tower_defense.js와 tower.js의 기능이 파일을 변경했음에도 변함없이 똑같이 작동하고 
 file:// 환경에서도 바로 실행 가능해야 해 . 
-ex) main.js / map.js / enemy.js 등등
+    ex) main.js / map.js / enemy.js 등등
+
+5. [타워 종류 추가]
+Have a Break, and then.. 먼저 이 질문에 답하기 위한 최적의 접근 전략을 설계하고, 
+그 전략에 따라 체계적으로 문제를 해결해줘 
+[질문] 현재 격자 형태로 된 맵의 타일을 클릭하면 바로 타워가 생성 돼. 
+이 타일을 누르면 타일이 연한 파란색(선택된 타일이라는 뜻)으로 바뀌고,
+id="towerInfoPanel" 여기에 타워 종류가 뜨고 원하는 타워 종류를 선택하면 해당 타워를 타일에 배치하게 만들어줘
