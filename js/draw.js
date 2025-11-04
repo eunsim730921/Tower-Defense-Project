@@ -28,16 +28,24 @@ function draw() {
     }
   }
 
-  // 타워
-  ctx.fillStyle = 'blue';
-  for (const t of towers) ctx.fillRect(t.x, t.y, TILE_SIZE, TILE_SIZE);
+  // 선택된 셀 표시
+  if (selectedCell) {
+    ctx.fillStyle = 'rgba(0,150,255,0.3)';
+    ctx.fillRect(selectedCell.x * TILE_SIZE, selectedCell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
+
+  // 타워 색상별 표시
+  for (const t of towers) {
+    ctx.fillStyle = t.color || 'blue';
+    ctx.fillRect(t.x, t.y, TILE_SIZE, TILE_SIZE);
+  }
 
   // 적
   ctx.fillStyle = 'red';
   for (const e of enemies)
     ctx.fillRect(e.x, e.y, e.width, e.height);
 
-  // 타워 사거리
+  // 타워 사거리 표시
   for (const t of towers) {
     if (t === hoverTower || t === selectedTower) {
       ctx.beginPath();
@@ -50,7 +58,7 @@ function draw() {
     }
   }
 
-  // 타워-적 연결선
+  // 타워가 공격 중일 때 선 연결
   ctx.strokeStyle = 'black';
   for (const t of towers) {
     if (t.target) {

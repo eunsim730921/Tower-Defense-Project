@@ -24,11 +24,22 @@
         <canvas id="gameCanvas" width="600" height="450"></canvas>
 
         <div id="towerInfoPanel">
+            <div id="towerSelectSection">
+                <h3 id="panelTitle">타워 선택</h3>
+                <div id="towerTypeButtons">
+                    <button class="towerBtn" data-type="basic">기본 타워</button>
+                    <button class="towerBtn" data-type="fast">빠른 타워</button>
+                    <button class="towerBtn" data-type="strong">강타 타워</button>
+                </div>
+            </div>
+
+        <div id="towerDetailSection" style="display: none;">
             <h3>타워 정보</h3>
             <p id="towerRange">사거리: -</p>
             <p id="towerDamage">공격력: -</p>
             <p id="towerFireRate">공격속도: -</p>
         </div>
+    </div>
 
         <div id="gameOver">
             <h2>게임 오버</h2>
@@ -36,9 +47,7 @@
         </div>
     </div>
 
-    <button id="nextWaveButton">
-        다음 웨이브 시작
-    </button>
+    <button id="nextWaveButton">다음 웨이브 시작</button>
 
     <script src="js/map.js" defer></script>
     <script src="js/enemy.js" defer></script>
