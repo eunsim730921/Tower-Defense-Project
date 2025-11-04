@@ -28,16 +28,30 @@
                 <h3 id="panelTitle">타워 선택</h3>
                 <div id="towerTypeButtons">
                     <button class="towerBtn" data-type="basic">기본 타워</button>
-                    <button class="towerBtn" data-type="fast">빠른 타워</button>
+                    <button class="towerBtn" data-type="fast">속사 타워</button>
                     <button class="towerBtn" data-type="strong">강타 타워</button>
+                    <button class="towerBtn" data-type="slow">슬로우 타워</button>
+                    <button class="towerBtn" data-type="splash">스플래시 타워</button>
                 </div>
             </div>
 
         <div id="towerDetailSection" style="display: none;">
-            <h3>타워 정보</h3>
-            <p id="towerRange">사거리: -</p>
+            <h3 id="towerName">타워 이름: -</h3>
             <p id="towerDamage">공격력: -</p>
             <p id="towerFireRate">공격속도: -</p>
+            <p id="towerRange">사거리: -</p>
+
+            <hr style="margin:8px 0; border-color: rgba(255,255,255,0.08)">
+            
+                <h4 style="margin:6px 0 4px 0;">강화</h4>
+            <div id="upgradeSection">
+                <button id="upgradeDamageBtn" class="towerBtn">공격력 +0.5 (5원)</button>
+                <button id="upgradeSpeedBtn" class="towerBtn">공격속도 +0.2 (5원)</button>
+                <button id="upgradeRangeBtn" class="towerBtn">사거리 +10 (5원)</button>
+                <button id="sellTowerBtn" class="towerBtn" style="background-color:#b33;">타워 판매 (70% 환급)</button>
+            </div>
+            
+
         </div>
     </div>
 
