@@ -4,6 +4,9 @@ let towers = [];
 let hoverTower = null;
 let selectedTower = null;
 let selectedCell = null;
+let projectiles = [];
+let explosions = []; 
+let frosts = [];     
 
 const towerName = document.getElementById('towerName');            
 const upgradeDamageBtn = document.getElementById('upgradeDamageBtn');
@@ -95,7 +98,8 @@ document.querySelectorAll('.towerBtn').forEach(btn => {
       fast:   { name: '속사 타워', range: 80, damage: 1, fireRate: 5, color: 'red', cost: 15 },
       strong: { name: '강타 타워', range: 120, damage: 7, fireRate: 1, color: 'green', cost: 20 },
       slow:   { name: '슬로우 타워', range: 90, damage: 0.5, fireRate: 2, color: 'cyan', cost: 20, slow: 0.7 },
-      splash: { name: '스플래시 타워', range: 110, damage: 2, fireRate: 1.5, color: 'gold', cost: 25, splash: true }
+      flame: { name: '화염 타워', range: 100, damage: 1.5, fireRate: 1.5, color: 'orange', cost: 25, burn: true }
+
     }[type];
 
     if (!towerData) return;
@@ -252,23 +256,83 @@ function updateTowers() {
     }
 
     if (target && t.fireCooldown <= 0) {
-      // 기본 피해
-      target.hp -= t.damage;
 
-      // 💣 스플래시 타워: 주변 적 피해
-      if (t.splash) {
-        for (const e2 of enemies) {
-          const dx = (e2.x + e2.width / 2) - (target.x + target.width / 2);
-          const dy = (e2.y + e2.height / 2) - (target.y + target.height / 2);
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 40 && e2 !== target) e2.hp -= t.damage * 0.5;
-        }
+      if (t.type !== 'slow') {
+        projectiles.push({
+          x: t.x + TILE_SIZE / 2,
+          y: t.y + TILE_SIZE / 2,
+          target: target,
+          damage: t.damage,
+          speed: 3,
+          color: t.color,
+          radius: 5
+        });
       }
 
-      // 🧊 슬로우 타워: 적 속도 감소
-      if (t.slow && target.speed > 0.5) {
-        target.speed *= t.slow;
-        setTimeout(() => target.speed /= t.slow, 2000);
+
+
+      // 🔥 화염 타워 지속 피해 효과 (갱신형)
+if (t.burn) {
+  for (const e2 of enemies) {
+    const dx = (e2.x + e2.width / 2) - (target.x + target.width / 2);
+    const dy = (e2.y + e2.height / 2) - (target.y + target.height / 2);
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 40) { // 🔥 폭발 범위 내 적
+            if (!e2.isBurning) {
+              // 🔥 새로 화상 상태 진입
+              e2.isBurning = true;
+              e2.burnEndTime = performance.now() + 2000; // 2초 지속
+            } else {
+              // ⏰ 이미 불타는 중이면 지속시간 갱신
+              e2.burnEndTime = performance.now() + 2000;
+            }
+          }
+        }
+
+        // 💥 폭발 이펙트도 추가
+        explosions.push({
+          x: target.x + target.width / 2,
+          y: target.y + target.height / 2,
+          radius: 10,
+          maxRadius: 50,
+          alpha: 1
+        });
+      }
+
+
+      // 🧊 광역 슬로우 (지속시간 갱신 + 이펙트)
+      if (t.slow) {
+        let affected = false;
+        for (const e2 of enemies) {
+          const dx = (e2.x + e2.width / 2) - (t.x + TILE_SIZE / 2);
+          const dy = (e2.y + e2.height / 2) - (t.y + TILE_SIZE / 2);
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < t.range) {
+            // 슬로우 적용
+            if (!e2.slowed) {
+              e2.originalSpeed = e2.speed;
+              e2.speed *= t.slow;
+              e2.slowed = true;
+            }
+
+            // 지속시간 갱신
+            e2.lastSlowedTime = performance.now();
+            affected = true;
+          }
+        }
+
+        // ❄️ 슬로우 타워 이펙트 (한 번이라도 적이 느려졌다면)
+        if (affected) {
+          frosts.push({
+            x: t.x + TILE_SIZE / 2,
+            y: t.y + TILE_SIZE / 2,
+            radius: 10,
+            maxRadius: t.range,
+            alpha: 0.6
+          });
+        }
       }
 
       // 공격 쿨타임
@@ -291,5 +355,56 @@ function updateTowers() {
   }
 
   enemies = aliveEnemies;
+  const now = performance.now();
+
+  // 🧊 슬로우 해제 (2초 동안 새로 맞지 않으면 원래 속도로 복구)
+  for (const e2 of enemies) {
+    if (e2.slowed && e2.lastSlowedTime && now - e2.lastSlowedTime > 2000) {
+      e2.speed = e2.originalSpeed;
+      e2.slowed = false;
+    }
+  }
+
+  // 🔥 화상 상태 갱신 (지속 피해)
+  for (const e of enemies) {
+    if (e.isBurning) {
+      e.hp -= 0.05; // 프레임당 화상 피해
+      if (now > e.burnEndTime) {
+        e.isBurning = false; // 🔚 지속시간 종료 시 해제
+      }
+    }
+  }
+
 }
 
+
+
+
+
+
+function updateProjectiles() {
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    const p = projectiles[i];
+    const e = p.target;
+
+    if (!e || e.hp <= 0) {
+      projectiles.splice(i, 1);
+      continue;
+    }
+
+    const dx = (e.x + e.width / 2) - p.x;
+    const dy = (e.y + e.height / 2) - p.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < p.speed) {
+      // 💥 충돌 시 데미지 적용
+      e.hp -= p.damage;
+      projectiles.splice(i, 1);
+      continue;
+    }
+
+    // 이동
+    p.x += (dx / dist) * p.speed;
+    p.y += (dy / dist) * p.speed;
+  }
+}

@@ -26,6 +26,7 @@ function gameLoop() {
   if (gameOver) return;
   updateEnemies();
   updateTowers();
+  updateProjectiles(); 
   draw();
   animationFrameId = requestAnimationFrame(gameLoop);
 }
