@@ -17,60 +17,68 @@
         <button id="startGameBtn">게임 시작</button>
     </div>
 
+    <div id="gameWrapper">
 
-    <h1 class="text-3xl font-bold mb-4">타워 디펜스</h1>
+        <h1 class="text-3xl font-bold mb-4">타워 디펜스</h1>
 
-    <div id="uiPanel" style="display: none;">
-        <div>체력: <span id="health">20</span></div>
-        <div>돈: <span id="money">50</span></div>
-        <div>웨이브: <span id="wave">0</span></div>
-    </div>
-
-    <!-- <div style="position: relative;"> -->
-    <div class="game-container">
-        <canvas id="gameCanvas" width="600" height="450"></canvas>
-
-        <div id="towerInfoPanel">
-            <div id="towerSelectSection">
-                <h3 id="panelTitle">타워 선택</h3>
-                <div id="towerTypeButtons">
-                    <button class="towerBtn" data-type="basic">기본 타워 (10원)</button>
-                    <button class="towerBtn" data-type="fast">속사 타워 (15원)</button>
-                    <button class="towerBtn" data-type="strong">강타 타워 (20원)</button>
-                    <button class="towerBtn" data-type="slow">슬로우 타워 (20원)</button>
-                    <button class="towerBtn" data-type="flame">화염 타워 (25원)</button>
-                </div>
-            </div>
-
-            <div id="towerDetailSection" style="display: none;">
-                <h3 id="towerName">타워 이름: -</h3>
-                <p id="towerDamage">공격력: -</p>
-                <p id="towerFireRate">공격속도: -</p>
-                <p id="towerRange">사거리: -</p>
-
-                <hr style="margin:8px 0; border-color: rgba(255,255,255,0.08)">
-
-                <h4 style="margin:6px 0 4px 0;">강화</h4>
-                <div id="upgradeSection">
-                    <button id="upgradeDamageBtn" class="towerBtn">공격력 +0.5 (5원)</button>
-                    <button id="upgradeSpeedBtn" class="towerBtn">공격속도 +0.2 (5원)</button>
-                    <button id="upgradeRangeBtn" class="towerBtn">사거리 +10 (5원)</button>
-                    <button id="sellTowerBtn" class="towerBtn" style="background-color:#b33;">타워 판매 (70% 환급)</button>
-                </div>
-
-
-            </div>
+        <div id="uiPanel" style="display: none;">
+            <div>체력: <span id="health">20</span></div>
+            <div>돈: <span id="money">50</span></div>
+            <div>웨이브: <span id="wave">0</span></div>
         </div>
 
-        
+        <div class="game-container">
+            <canvas id="gameCanvas" width="600" height="450"></canvas>
 
+            <div id="towerInfoPanel">
+                <div id="towerSelectSection">
+                    <h3 id="panelTitle">타워 선택</h3>
+                    <div id="towerTypeButtons">
+                        <button class="towerBtn" data-type="basic">기본 타워 (10원)</button>
+                        <button class="towerBtn" data-type="fast">속사 타워 (15원)</button>
+                        <button class="towerBtn" data-type="strong">강타 타워 (20원)</button>
+                        <button class="towerBtn" data-type="slow">슬로우 타워 (20원)</button>
+                        <button class="towerBtn" data-type="flame">화염 타워 (25원)</button>
+                    </div>
+                </div>
+
+                <div id="towerDetailSection" style="display: none;">
+                    <h3 id="towerName">타워 이름: -</h3>
+                    <p id="towerDamage">공격력: -</p>
+                    <p id="towerFireRate">공격속도: -</p>
+                    <p id="towerRange">사거리: -</p>
+
+                    <hr style="margin:8px 0; border-color: rgba(255,255,255,0.08)">
+
+                    <h4 style="margin:6px 0 4px 0;">강화</h4>
+                    <div id="upgradeSection">
+                        <button id="upgradeDamageBtn" class="towerBtn">공격력 +0.5 (5원)</button>
+                        <button id="upgradeSpeedBtn" class="towerBtn">공격속도 +0.2 (5원)</button>
+                        <button id="upgradeRangeBtn" class="towerBtn">사거리 +10 (5원)</button>
+                        <button id="sellTowerBtn" class="towerBtn" style="background-color:#b33;">타워 판매 (70% 환급)</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div id="nextWaveInfo" style="visibility: hidden;">
+        <h4>Next Wave (<span id="nextWaveNum">1</span>)</h4>
+        <ul id="nextWaveList">
+            </ul>
+    </div>
+    <div class="wave-buttons">
+        <button id="nextWaveButton">다음 웨이브 시작</button>
+        <button id="challengeBossButton" style="background-color: #d9534f;">보스 몬스터 도전</button>
+        <button id="gameSpeedButton" style="background-color: #5bc0de;">1x Speed</button>
     </div>
     <div id="gameOver" class="screen">
         <h2>게임 오버</h2>
         <p id="finalWaveText">최종 웨이브: 0</p>
         <button id="restartButton">다시 시작</button>
     </div>
-    <button id="nextWaveButton">다음 웨이브 시작</button>
+
 
     <script src="js/map.js" defer></script>
     <script src="js/enemy.js" defer></script>
