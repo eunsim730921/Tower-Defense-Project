@@ -8,12 +8,18 @@ body {
     background-color: #333;
     color: white;
     margin: 0;
+    padding: 1rem 0; /* 상하 여백 추가 */
+}
+
+#gameWrapper {
+    width: 866px; 
 }
 
 #gameCanvas {
     background-color: #f0f0f0;
     border-radius: 8px;
     cursor: pointer;
+    flex-shrink: 0; 
 }
 
 #uiPanel {
@@ -21,12 +27,14 @@ body {
     margin: 1rem;
     display: flex;
     gap: 2rem;
+    padding-left: 1rem;
+    margin: 1rem 0;
 }
 
 button {
     font-size: 1rem;
     padding: 0.5rem 1rem;
-    margin-top: 1rem;
+    margin-top: 1rem; 
     border-radius: 8px;
     border: none;
     cursor: pointer;
@@ -46,47 +54,50 @@ button {
     text-align: center;
 }
 
-h2 {
-    font-size: 2rem;
-    color: red;
+#restartButton {
+    background-color: #008CBA;
 }
+
+#nextWaveButton {
+    background-color: #f44336;
+}
+
+#nextWaveButton:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
 
 .game-container {
-    position: relative;
-    display: inline-block;
-}
-
-#gameCanvas {
-    display: block;
-    position: relative;
-    z-index: 1;
+    position: relative; 
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start; 
 }
 
 #towerInfoPanel {
-    position: absolute;
-    top: 0;
-    left: 620px;
     width: 250px;
-    height: 450px;
-    background-color: rgba(0, 0, 0, 0.85);
-    color: white;
+    background-color: #444;
+    padding: 0.8rem; 
     border-radius: 8px;
-    padding: 10px;
-    box-sizing: border-box;
-    display: none;
-    transition: opacity 0.2s ease;
+    box-sizing: border-box; 
+    height: 450px; 
 }
 
-#towerInfoPanel h3 {
+#towerInfoPanel h3,
+#towerInfoPanel h4 {
     margin-top: 0;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
     text-align: center;
+    margin-bottom: 0.5rem; 
 }
 
 #towerInfoPanel p {
-    margin: 0.5rem 0;
-    font-size: 1.1rem;
+    margin: 0.3rem 0; 
+    font-size: 1rem;  
+}
+
+#towerInfoPanel hr {
+    margin: 0.5rem 0; 
 }
 
 canvas:hover {
@@ -102,7 +113,7 @@ canvas:hover {
 
 .towerBtn {
   width: 100%;
-  padding: 18px 8px;
+  padding: 18px 8px; 
   margin: 5px 0;
   border: none;
   border-radius: 6px;
@@ -111,6 +122,13 @@ canvas:hover {
   cursor: pointer;
   font-size: 1rem;
 }
+
+#towerDetailSection .towerBtn {
+    padding: 10px 8px;  
+    font-size: 0.9rem; 
+    margin: 4px 0;     
+}
+
 
 .towerBtn:hover {
   background-color: #00aaff;
@@ -128,54 +146,86 @@ canvas:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 999;
-}
-
-#gameOver h2 {
-  font-size: 3rem;
-  color: red;
-  margin-bottom: 1rem;
-}
-
-#gameOver p {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-#gameOver button {
-  font-size: 1.2rem;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-}
-
-#gameOver button:hover {
-  background-color: #66d37f;
-}
-
-#introScreen h2 {
-  color: #1cc6ff;
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  z-index: 100;
 }
 
 
-#introScreen button {
-  font-size: 1.2rem;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  background-color: #00aaff;
-  color: white;
-  cursor: pointer;
+/* ▼ [삭제] 웨이브 컨트롤 UI ( .wave-controls ) */
+/* (이전 .wave-controls 스타일 삭제) */
+
+
+/* ▼▼▼ 다음 웨이브 UI (수평 레이아웃) ▼▼▼ */
+#nextWaveInfo {
+    width: 866px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    visibility: visible;
+    margin-top: 1rem; /* gameWrapper와의 간격 */
+    
+    /* flex로 수평 정렬 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* 몹 종류가 너무 많으면 줄바꿈 */
+    min-height: 2.5rem; /* 높이 고정 (흔들림 방지) */
 }
 
-#introScreen button:hover {
-  background-color: #33bbff;
+#nextWaveInfo h4 {
+    margin: 0 10px 0 0; /* 오른쪽 여백 */
+    padding: 0;
+    border-bottom: none; /* 밑줄 제거 */
+    font-size: 1rem;
 }
 
+#nextWaveInfo ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex; /* 몹 리스트 수평 정렬 */
+}
+
+#nextWaveInfo li {
+    margin: 0 10px; /* 좌우 여백 */
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+/* ▲▲▲ 다음 웨이브 UI (수평 레이아웃) ▲▲▲ */
 
 
+/* ▼▼▼ 버튼 컨테이너 (신규) ▼▼▼ */
+.wave-buttons {
+    width: 866px;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem; /* nextWaveInfo와의 간격 */
+}
+
+.wave-buttons button {
+    margin-top: 0; /* body의 button 기본 여백 제거 */
+}
+/* ▲▲▲ 버튼 컨테이너 (신규) ▲▲▲ */
+
+
+/* 몹 타입별 색상 표시 */
+#nextWaveInfo li span {
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    border: 1px solid rgba(0,0,0,0.2);
+}
+.enemy-basic { background-color: #d9534f; }
+.enemy-fast { background-color: #f0ad4e; }
+.enemy-tank { background-color: #5bc0de; }
+.enemy-ninja { background-color: #444444; }
+
+
+/* 2배속 버튼 활성 스타일 */
+#gameSpeedButton.active {
+    background-color: #4CAF50; 
+    box-shadow: 0 0 10px #4CAF50;
+}

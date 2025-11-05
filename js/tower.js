@@ -70,7 +70,6 @@ canvas.addEventListener('click', (e) => {
 
   if (isPathCell(cx, cy) || isTowerCell(cx, cy)) return;
 
-  // 같은 셀 재클릭 시 해제
   if (selectedCell && selectedCell.x === cx && selectedCell.y === cy) {
     selectedCell = null;
     hidePanel();
@@ -104,7 +103,7 @@ document.querySelectorAll('.towerBtn').forEach(btn => {
 
     if (!towerData) return;
     if (money < towerData.cost) {
-      alert(`돈이 부족합니다! (${towerData.cost} 필요)`);
+      showGameMessage(`돈이 부족합니다! (${towerData.cost} 필요)`);
       return;
     }
 
@@ -173,17 +172,17 @@ canvas.addEventListener('click', (e) => {
     hidePanel();
   }
 });
+
 // 업그레이드 버튼 이벤트 핸들러
 function canAfford(cost) { return money >= cost; }
 
 if (upgradeDamageBtn) {
   upgradeDamageBtn.addEventListener('click', () => {
-    if (!selectedTower) return alert('강화할 타워를 선택하세요.');
-    if (!canAfford(UPGRADE_COST)) return alert('돈이 부족합니다!');
+    if (!selectedTower) return showGameMessage('강화할 타워를 선택하세요.', '#ffc107'); 
+    if (!canAfford(UPGRADE_COST)) return showGameMessage('돈이 부족합니다!');
     money -= UPGRADE_COST;
     selectedTower.investedMoney += UPGRADE_COST;
 
-    // 데미지 소수점 2자리로 처리
     selectedTower.damage = Math.round((selectedTower.damage + 0.5) * 100) / 100;
     updateUI();
     showDetailPanel(selectedTower);
@@ -192,8 +191,8 @@ if (upgradeDamageBtn) {
 
 if (upgradeSpeedBtn) {
   upgradeSpeedBtn.addEventListener('click', () => {
-    if (!selectedTower) return alert('강화할 타워를 선택하세요.');
-    if (!canAfford(UPGRADE_COST)) return alert('돈이 부족합니다!');
+    if (!selectedTower) return showGameMessage('강화할 타워를 선택하세요.', '#ffc107');
+    if (!canAfford(UPGRADE_COST)) return showGameMessage('돈이 부족합니다!');
     money -= UPGRADE_COST;
     selectedTower.investedMoney += UPGRADE_COST;
     selectedTower.fireRate = Math.round((selectedTower.fireRate + 0.2) * 100) / 100;
@@ -204,8 +203,8 @@ if (upgradeSpeedBtn) {
 
 if (upgradeRangeBtn) {
   upgradeRangeBtn.addEventListener('click', () => {
-    if (!selectedTower) return alert('강화할 타워를 선택하세요.');
-    if (!canAfford(UPGRADE_COST)) return alert('돈이 부족합니다!');
+    if (!selectedTower) return showGameMessage('강화할 타워를 선택하세요.', '#ffc107');
+    if (!canAfford(UPGRADE_COST)) return showGameMessage('돈이 부족합니다!');
     money -= UPGRADE_COST;
     selectedTower.investedMoney += UPGRADE_COST;
     selectedTower.range = selectedTower.range + 10;
@@ -216,7 +215,7 @@ if (upgradeRangeBtn) {
 
 if (sellTowerBtn) {
   sellTowerBtn.addEventListener('click', () => {
-    if (!selectedTower) return alert('판매할 타워를 선택하세요.');
+    if (!selectedTower) return showGameMessage('판매할 타워를 선택하세요.', '#ffc107');
 
     const refund = Math.floor(selectedTower.investedMoney * 0.7);
     money += refund;
@@ -231,7 +230,7 @@ if (sellTowerBtn) {
     updateUI();
     hidePanel();
 
-    alert(`타워를 판매했습니다! +${refund}원 환급`);
+    showGameMessage(`타워 판매! +${refund}원 환급`, '#28a745');
   });
 }
 
@@ -246,6 +245,10 @@ function updateTowers() {
     let target = null;
     let minDist = t.range;
     for (const e of enemies) {
+      if (e.invulnerabilityTimer > 0) { 
+        continue;
+      }
+
       const dx = (e.x + e.width / 2) - (t.x + TILE_SIZE / 2);
       const dy = (e.y + e.height / 2) - (t.y + TILE_SIZE / 2);
       const d = Math.sqrt(dx * dx + dy * dy);
@@ -274,23 +277,22 @@ function updateTowers() {
       // 🔥 화염 타워 지속 피해 효과 (갱신형)
 if (t.burn) {
   for (const e2 of enemies) {
+    if (e2.invulnerabilityTimer > 0) continue; 
+
     const dx = (e2.x + e2.width / 2) - (target.x + target.width / 2);
     const dy = (e2.y + e2.height / 2) - (target.y + target.height / 2);
     const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < 40) { // 🔥 폭발 범위 내 적
             if (!e2.isBurning) {
-              // 🔥 새로 화상 상태 진입
               e2.isBurning = true;
-              e2.burnEndTime = performance.now() + 2000; // 2초 지속
+              e2.burnEndTime = performance.now() + 2000; 
             } else {
-              // ⏰ 이미 불타는 중이면 지속시간 갱신
               e2.burnEndTime = performance.now() + 2000;
             }
           }
         }
 
-        // 💥 폭발 이펙트도 추가
         explosions.push({
           x: target.x + target.width / 2,
           y: target.y + target.height / 2,
@@ -305,25 +307,23 @@ if (t.burn) {
       if (t.slow) {
         let affected = false;
         for (const e2 of enemies) {
+          if (e2.invulnerabilityTimer > 0) continue; 
+
           const dx = (e2.x + e2.width / 2) - (t.x + TILE_SIZE / 2);
           const dy = (e2.y + e2.height / 2) - (t.y + TILE_SIZE / 2);
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < t.range) {
-            // 슬로우 적용
             if (!e2.slowed) {
               e2.originalSpeed = e2.speed;
               e2.speed *= t.slow;
               e2.slowed = true;
             }
-
-            // 지속시간 갱신
             e2.lastSlowedTime = performance.now();
             affected = true;
           }
         }
 
-        // ❄️ 슬로우 타워 이펙트 (한 번이라도 적이 느려졌다면)
         if (affected) {
           frosts.push({
             x: t.x + TILE_SIZE / 2,
@@ -348,16 +348,42 @@ if (t.burn) {
   const deadEnemies = enemies.filter(e => e.hp <= 0);
   const aliveEnemies = enemies.filter(e => e.hp > 0);
 
-  // 죽은 적마다 보상금 지급 (적당히 5원씩 예시)
+  // ▼▼▼ 1. 돈 버그 수정 ▼▼▼
   if (deadEnemies.length > 0) {
-    money += deadEnemies.length * 2;
-    updateUI();
+    let totalReward = 0;
+    let didTransition = false; // 스테이지 전환 플래그
+
+    for (const deadEnemy of deadEnemies) {
+        
+        if (deadEnemy.type === 'wave20Boss') {
+            wave20BossActive = false; 
+            transitionToStage2(); // ★ 스테이지 2 전환 (돈 = 100)
+            didTransition = true;
+            // 20웨이브 보스 보상(reward)은 totalReward에 더하지 않음
+        } 
+        else if (deadEnemy.type === 'boss') {
+            bossActive = false; 
+            if (challengeBossButton) challengeBossButton.disabled = false;
+            totalReward += deadEnemy.reward || 2; // 일반 보스 보상
+        } else {
+            totalReward += deadEnemy.reward || 2; // 일반 몹 보상
+        }
+    }
+    
+    // 스테이지 전환이 안 됐을 때만, 획득한 보상을 더함
+    if (!didTransition && totalReward > 0) {
+        money += totalReward;
+        updateUI();
+    }
+    // (스테이지 전환 시에는 transitionToStage2가 money와 UI를 이미 100으로 설정함)
   }
+  // ▲▲▲ 1. 돈 버그 수정 ▲▲▲
+
 
   enemies = aliveEnemies;
   const now = performance.now();
 
-  // 🧊 슬로우 해제 (2초 동안 새로 맞지 않으면 원래 속도로 복구)
+  // 🧊 슬로우 해제
   for (const e2 of enemies) {
     if (e2.slowed && e2.lastSlowedTime && now - e2.lastSlowedTime > 2000) {
       e2.speed = e2.originalSpeed;
@@ -365,12 +391,24 @@ if (t.burn) {
     }
   }
 
-  // 🔥 화상 상태 갱신 (지속 피해)
+  // 🔥 화상 상태 갱신
   for (const e of enemies) {
     if (e.isBurning) {
-      e.hp -= 0.05; // 프레임당 화상 피해
+      const burnDamage = 0.05; 
+      e.hp -= burnDamage; 
+      
+      if (Math.random() < 0.1) { 
+        e.damageNumbers.push({
+            value: burnDamage.toFixed(2), 
+            x: e.x + e.width / 2 + (Math.random() - 0.5) * 10, 
+            y: e.y,
+            timer: 20, 
+            color: '#ff6600' 
+        });
+      }
+
       if (now > e.burnEndTime) {
-        e.isBurning = false; // 🔚 지속시간 종료 시 해제
+        e.isBurning = false; 
       }
     }
   }
@@ -397,8 +435,19 @@ function updateProjectiles() {
     const dist = Math.sqrt(dx * dx + dy * dy);
 
     if (dist < p.speed) {
-      // 💥 충돌 시 데미지 적용
+      // 💥 충돌!
+      
       e.hp -= p.damage;
+      e.isHit = true;
+      e.hitTimer = 5;
+      e.damageNumbers.push({
+          value: p.damage.toFixed(1),
+          x: e.x + e.width / 2 + (Math.random() - 0.5) * e.width,
+          y: e.y,
+          timer: 30,
+          color: '#ffffff'
+      });
+      
       projectiles.splice(i, 1);
       continue;
     }

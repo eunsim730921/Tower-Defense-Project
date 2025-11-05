@@ -54,7 +54,7 @@ function draw() {
   for (const e of enemies) {
     ctx.save();
 
-    // 🔥 화상 상태: 붉은빛 오라
+    // 🔥 화상 상태
     if (e.isBurning) {
       const gradient = ctx.createRadialGradient(
         e.x + e.width / 2,
@@ -72,7 +72,7 @@ function draw() {
       ctx.fill();
     }
 
-    // ❄️ 슬로우 상태: 푸른빛 오라
+    // ❄️ 슬로우 상태
     if (e.slowed) {
       const gradient = ctx.createRadialGradient(
         e.x + e.width / 2,
@@ -89,12 +89,82 @@ function draw() {
       ctx.arc(e.x + e.width / 2, e.y + e.height / 2, e.width * 1.1, 0, Math.PI * 2);
       ctx.fill();
     }
+    
+    // 💚 보스 체력 회복 오라
+    if (e.isHealing) { 
+      const gradient = ctx.createRadialGradient(
+        e.x + e.width / 2,
+        e.y + e.height / 2,
+        e.width * 0.3, 
+        e.x + e.width / 2,
+        e.y + e.height / 2,
+        e.width * 1.2 
+      );
+      gradient.addColorStop(0, 'rgba(40, 230, 80, 0.8)'); 
+      gradient.addColorStop(1, 'rgba(40, 167, 69, 0)');  
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      const pulse = 1 + Math.sin(performance.now() / 150) * 0.1;
+      ctx.arc(e.x + e.width / 2, e.y + e.height / 2, e.width * 1.1 * pulse, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     ctx.restore();
+    
+    ctx.save(); 
 
-    // 본체(적) 그리기
-    ctx.fillStyle = 'red';
-    ctx.fillRect(e.x, e.y, e.width, e.height);
+    // ▼▼▼ 닌자/보스 무적 효과 (프레임 기반) ▼▼▼
+    if (e.invulnerabilityTimer > 0) { 
+      ctx.globalAlpha = 0.3 + (Math.sin(performance.now() / 100) + 1) * 0.3;
+    }
+    // ▲▲▲ 닌자/보스 무적 효과 (프레임 기반) ▲▲▲
+
+    // ▼ 1. 피격 점멸 효과
+    if (e.isHit && e.hitTimer > 0) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; 
+        ctx.fillRect(e.x, e.y, e.width, e.height);
+        e.hitTimer--; 
+    } else {
+        e.isHit = false; 
+        ctx.fillStyle = e.color || 'red'; 
+        ctx.fillRect(e.x, e.y, e.width, e.height);
+    }
+
+    ctx.restore(); 
+    
+    // ▼ 2. 체력바
+    const hpPercent = e.hp / e.maxHp;
+    let hpColor;
+    if (hpPercent > 0.75) hpColor = '#28a745'; 
+    else if (hpPercent > 0.5) hpColor = '#ffc107'; 
+    else if (hpPercent > 0.25) hpColor = '#fd7e14'; 
+    else hpColor = '#dc3545'; 
+
+    ctx.fillStyle = '#343a40';
+    ctx.fillRect(e.x, e.y - 10, e.width, 5);
+    ctx.fillStyle = hpColor;
+    ctx.fillRect(e.x, e.y - 10, e.width * hpPercent, 5);
+
+
+    // ▼ 3. 데미지 숫자 표시
+    for (let i = e.damageNumbers.length - 1; i >= 0; i--) {
+        const dn = e.damageNumbers[i];
+        
+        ctx.save();
+        ctx.fillStyle = dn.color || 'rgba(255, 255, 255, 0.9)';
+        ctx.font = 'bold 12px Arial';
+        ctx.shadowColor = 'black';
+        ctx.shadowBlur = 2;
+        ctx.fillText(dn.value, dn.x, dn.y - 15);
+        ctx.restore();
+        
+        dn.y -= 0.5;
+        dn.timer--;
+        
+        if (dn.timer <= 0) {
+            e.damageNumbers.splice(i, 1);
+        }
+    }
   }
 
 
@@ -120,21 +190,16 @@ function draw() {
   for (const p of projectiles) {
     ctx.beginPath();
 
-    // ✨ 타워 타입별 색상 효과
     if (p.color === 'cyan') {
-      // ❄️ 슬로우 타워
       ctx.fillStyle = 'rgba(0, 255, 255, 0.8)';
     }
     else if (p.color === 'orange') {
-      // 💨 속사 타워
       ctx.fillStyle = 'rgba(255, 165, 0, 0.9)';
     }
     else if (p.color === 'limegreen') {
-      // 💪 강타 타워
       ctx.fillStyle = 'rgba(50, 205, 50, 0.9)';
     }
     else {
-      // 🔵 기본 타워
       ctx.fillStyle = p.color || 'blue';
     }
 
@@ -152,8 +217,8 @@ function draw() {
     ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2);
     ctx.fill();
 
-    ex.radius += 3;       // 퍼지는 속도
-    ex.alpha -= 0.05;     // 사라짐 속도
+    ex.radius += 3;
+    ex.alpha -= 0.05;
     if (ex.alpha <= 0) explosions.splice(i, 1);
   }
 
@@ -165,7 +230,6 @@ for (let i = frosts.length - 1; i >= 0; i--) {
   ctx.shadowBlur = 20;
   ctx.shadowColor = 'rgba(150, 220, 255, 0.8)';
 
-  // 그라데이션(중심은 밝고 바깥은 투명)
   const gradient = ctx.createRadialGradient(f.x, f.y, f.radius * 0.2, f.x, f.y, f.radius);
   gradient.addColorStop(0, `rgba(180, 240, 255, ${f.alpha * 0.8})`);
   gradient.addColorStop(1, `rgba(80, 180, 255, 0)`);
@@ -180,18 +244,33 @@ for (let i = frosts.length - 1; i >= 0; i--) {
   ctx.stroke();
   ctx.restore();
 
-  // 💫 퍼짐 속도
   f.radius += 3;
 
-  // 💡 사거리만큼 퍼졌으면 점점 사라지기 시작
   if (f.radius >= f.maxRadius) {
-    f.alpha -= 0.05; // 사거리 도달 시 서서히 사라짐
+    f.alpha -= 0.05;
   } else {
-    f.alpha -= 0.01; // 도중엔 천천히 감소
+    f.alpha -= 0.01;
   }
 
-  // 완전히 사라지면 배열에서 제거
   if (f.alpha <= 0) frosts.splice(i, 1);
 }
 
+  // ▼ 게임 메시지 표시 (맨 마지막으로 이동)
+  if (gameMessages.length > 0) {
+    const msg = gameMessages[gameMessages.length - 1]; 
+    
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 1.3rem Arial';
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 4;
+
+    const alpha = Math.min(1, msg.timer / (msg.maxTimer * 0.5)); 
+    ctx.globalAlpha = alpha;
+    
+    ctx.fillStyle = msg.color;
+    ctx.fillText(msg.text, canvas.width / 2, 40); 
+    
+    ctx.restore();
+  }
 }
